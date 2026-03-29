@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: webkit
+      POSTGRES_PASSWORD: webkit
+      POSTGRES_DB: webkit
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U webkit"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./public:/app/public
+      - ./uploads:/app/uploads
+    environment:
+      DATABASE_URL: postgresql://webkit:webkit@db:5432/webkit
+      SESSION_SECRET: this-is-a-dev-secret-change-in-prod
+      SITE_NAME: Webkit Dev
+      SITE_URL: http://localhost:3000
+      WHATSAPP_NUMBER: "+1234567890"
+      STORAGE_PROVIDER: local
+      UPLOAD_DIR: ./uploads
+      DEFAULT_LOCALE: en
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

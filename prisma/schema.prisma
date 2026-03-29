@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                String   @id @default("default")
+  businessName      String
+  businessNameAr    String?
+  phone             String?
+  whatsappNumber    String?
+  email             String?
+  address           String?
+  addressAr         String?
+  logoUrl           String?
+  socialFacebook    String?
+  socialInstagram   String?
+  socialTwitter     String?
+  socialLinkedin    String?
+  metaTitle         String?
+  metaTitleAr       String?
+  metaDescription   String?
+  metaDescriptionAr String?
+  updatedAt         DateTime @updatedAt
+}
+
+model Service {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  titleAr       String
+  description   String   @db.Text
+  descriptionAr String   @db.Text
+  imageUrl      String?
+  sortOrder     Int      @default(0)
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  url       String
+  altText   String?
+  altTextAr String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([sortOrder])
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model WhatsAppLead {
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String
+  source    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
